@@ -1,14 +1,14 @@
-add_library(a4988 STATIC)
+add_library(tca9548 STATIC)
 
-target_sources(a4988 PRIVATE 
-    a4988.c
+target_sources(tca9548 PRIVATE 
+    tca9548.c
 )
 
-target_include_directories(a4988 PUBLIC
+target_include_directories(tca9548 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_compile_options(a4988 PUBLIC
+target_compile_options(tca9548 PUBLIC
     -std=c23
     -Wall
     -Wextra
