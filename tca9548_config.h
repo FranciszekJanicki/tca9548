@@ -50,6 +50,8 @@ typedef struct {
     tca9548_err_t (*bus_deinitialize)(void*);
     tca9548_err_t (*bus_transmit_data)(void*, uint8_t const*, size_t);
     tca9548_err_t (*bus_receive_data)(void*, uint8_t*, size_t);
+    tca9548_err_t (*bus_write_data)(void*, uint8_t, uint8_t const*, size_t);
+    tca9548_err_t (*bus_read_data)(void*, uint8_t, uint8_t*, size_t);
 } tca9548_interface_t;
 
 #endif // TCA9548_TCA9548_CONFIG_H
