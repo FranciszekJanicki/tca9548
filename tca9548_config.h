@@ -12,15 +12,14 @@ typedef enum {
 } tca9548_err_t;
 
 typedef enum {
-
-    TCA9548_SLAVE_ADDRESS_A2_H_A1_H_A0_H = 0b1110111,
-    TCA9548_SLAVE_ADDRESS_A2_H_A1_H_A0_L = 0b1110110,
-    TCA9548_SLAVE_ADDRESS_A2_H_A1_L_A0_H = 0b1110101,
-    TCA9548_SLAVE_ADDRESS_A2_L_A1_H_A0_H = 0b1110011,
-    TCA9548_SLAVE_ADDRESS_A2_H_A1_L_A0_L = 0b1110100,
-    TCA9548_SLAVE_ADDRESS_A2_L_A1_H_A0_L = 0b1110010,
-    TCA9548_SLAVE_ADDRESS_A2_L_A1_L_A0_H = 0b1110001,
-    TCA9548_SLAVE_ADDRESS_A2_L_A1_L_A0_L = 0b1110000,
+    TCA9548_SLAVE_ADDRESS_A2H_A1H_A0H = 0b1110111,
+    TCA9548_SLAVE_ADDRESS_A2H_A1H_A0L = 0b1110110,
+    TCA9548_SLAVE_ADDRESS_A2H_A1L_A0H = 0b1110101,
+    TCA9548_SLAVE_ADDRESS_A2L_A1H_A0H = 0b1110011,
+    TCA9548_SLAVE_ADDRESS_A2H_A1L_A0L = 0b1110100,
+    TCA9548_SLAVE_ADDRESS_A2L_A1H_A0L = 0b1110010,
+    TCA9548_SLAVE_ADDRESS_A2L_A1L_A0H = 0b1110001,
+    TCA9548_SLAVE_ADDRESS_A2L_A1L_A0L = 0b1110000,
 } tca9548_slave_address_t;
 
 typedef enum {
@@ -50,8 +49,11 @@ typedef struct {
     tca9548_err_t (*bus_deinitialize)(void*);
     tca9548_err_t (*bus_transmit_data)(void*, uint8_t const*, size_t);
     tca9548_err_t (*bus_receive_data)(void*, uint8_t*, size_t);
-    tca9548_err_t (*bus_write_data)(void*, uint8_t, uint8_t const*, size_t);
-    tca9548_err_t (*bus_read_data)(void*, uint8_t, uint8_t*, size_t);
+
+    tca9548_err_t (*bus_slave_transmit_data)(void*, uint16_t, uint8_t const*, size_t);
+    tca9548_err_t (*bus_slave_receive_data)(void*, uint16_t, uint8_t*, size_t);
+    tca9548_err_t (*bus_slave_write_data)(void*, uint16_t, uint8_t, uint8_t const*, size_t);
+    tca9548_err_t (*bus_slave_read_data)(void*, uint16_t, uint8_t, uint8_t*, size_t);
 } tca9548_interface_t;
 
 #endif // TCA9548_TCA9548_CONFIG_H

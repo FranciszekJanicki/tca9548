@@ -55,29 +55,59 @@ static tca9548_err_t tca9548_bus_receive_data(tca9548_t const* tca9548,
                : TCA9548_ERR_NULL;
 }
 
-static tca9548_err_t tca9548_bus_write_data(tca9548_t const* tca9548,
-                                            uint8_t address,
-                                            uint8_t const* data,
-                                            size_t data_size)
+static tca9548_err_t tca9548_bus_slave_transmit_data(tca9548_t const* tca9548,
+                                                     uint16_t slave_address,
+                                                     uint8_t const* data,
+                                                     size_t data_size)
 {
-    return (tca9548->interface.bus_write_data != NULL)
-               ? tca9548->interface.bus_write_data(tca9548->interface.bus_user,
-                                                   address,
-                                                   data,
-                                                   data_size)
+    return (tca9548->interface.bus_slave_transmit_data != NULL)
+               ? tca9548->interface.bus_slave_transmit_data(tca9548->interface.bus_user,
+                                                            slave_address,
+                                                            data,
+                                                            data_size)
                : TCA9548_ERR_NULL;
 }
 
-static tca9548_err_t tca9548_bus_read_data(tca9548_t const* tca9548,
-                                           uint8_t address,
-                                           uint8_t* data,
-                                           size_t data_size)
+static tca9548_err_t tca9548_bus_slave_receive_data(tca9548_t const* tca9548,
+                                                    uint16_t slave_address,
+                                                    uint8_t* data,
+                                                    size_t data_size)
 {
-    return (tca9548->interface.bus_read_data != NULL)
-               ? tca9548->interface.bus_read_data(tca9548->interface.bus_user,
-                                                  address,
-                                                  data,
-                                                  data_size)
+    return (tca9548->interface.bus_slave_receive_data != NULL)
+               ? tca9548->interface.bus_slave_receive_data(tca9548->interface.bus_user,
+                                                           slave_address,
+                                                           data,
+                                                           data_size)
+               : TCA9548_ERR_NULL;
+}
+
+static tca9548_err_t tca9548_bus_slave_write_data(tca9548_t const* tca9548,
+                                                  uint16_t slave_address,
+                                                  uint8_t reg_address,
+                                                  uint8_t const* data,
+                                                  size_t data_size)
+{
+    return (tca9548->interface.bus_slave_write_data != NULL)
+               ? tca9548->interface.bus_slave_write_data(tca9548->interface.bus_user,
+                                                         slave_address,
+                                                         reg_address,
+                                                         data,
+                                                         data_size)
+               : TCA9548_ERR_NULL;
+}
+
+static tca9548_err_t tca9548_bus_slave_read_data(tca9548_t const* tca9548,
+                                                 uint16_t slave_address,
+                                                 uint8_t reg_address,
+                                                 uint8_t* data,
+                                                 size_t data_size)
+{
+    return (tca9548->interface.bus_slave_read_data != NULL)
+               ? tca9548->interface.bus_slave_read_data(tca9548->interface.bus_user,
+                                                        slave_address,
+                                                        reg_address,
+                                                        data,
+                                                        data_size)
                : TCA9548_ERR_NULL;
 }
 
@@ -113,6 +143,7 @@ tca9548_err_t tca9548_deinitialize(tca9548_t* tca9548)
 
 tca9548_err_t tca9548_transmit_channel_data(tca9548_t const* tca9548,
                                             tca9548_channel_t channel,
+                                            uint16_t slave_address,
                                             uint8_t const* data,
                                             size_t data_size)
 {
@@ -120,13 +151,14 @@ tca9548_err_t tca9548_transmit_channel_data(tca9548_t const* tca9548,
     assert(data != NULL);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
-    err |= tca9548_transmit_current_channel_data(tca9548, data, data_size);
+    err |= tca9548_bus_slave_transmit_data(tca9548, slave_address, data, data_size);
 
     return err;
 }
 
 tca9548_err_t tca9548_receive_channel_data(tca9548_t const* tca9548,
                                            tca9548_channel_t channel,
+                                           uint16_t slave_address,
                                            uint8_t* data,
                                            size_t data_size)
 {
@@ -134,14 +166,15 @@ tca9548_err_t tca9548_receive_channel_data(tca9548_t const* tca9548,
     assert(data != NULL);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
-    err |= tca9548_receive_current_channel_data(tca9548, data, data_size);
+    err |= tca9548_bus_slave_receive_data(tca9548, slave_address, data, data_size);
 
     return err;
 }
 
 tca9548_err_t tca9548_write_channel_data(tca9548_t const* tca9548,
                                          tca9548_channel_t channel,
-                                         uint8_t address,
+                                         uint16_t slave_address,
+                                         uint8_t reg_address,
                                          uint8_t const* data,
                                          size_t data_size)
 {
@@ -149,14 +182,15 @@ tca9548_err_t tca9548_write_channel_data(tca9548_t const* tca9548,
     assert(data != NULL);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
-    err |= tca9548_write_current_channel_data(tca9548, address, data, data_size);
+    err |= tca9548_bus_slave_write_data(tca9548, slave_address, reg_address, data, data_size);
 
     return err;
 }
 
 tca9548_err_t tca9548_read_channel_data(tca9548_t const* tca9548,
                                         tca9548_channel_t channel,
-                                        uint8_t address,
+                                        uint16_t slave_address,
+                                        uint8_t reg_address,
                                         uint8_t* data,
                                         size_t data_size)
 {
@@ -164,51 +198,55 @@ tca9548_err_t tca9548_read_channel_data(tca9548_t const* tca9548,
     assert(data != NULL);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
-    err |= tca9548_read_current_channel_data(tca9548, address, data, data_size);
+    err |= tca9548_bus_slave_read_data(tca9548, slave_address, reg_address, data, data_size);
 
     return err;
 }
 
 tca9548_err_t tca9548_transmit_current_channel_data(tca9548_t const* tca9548,
+                                                    uint16_t slave_address,
                                                     uint8_t const* data,
                                                     size_t data_size)
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
 
-    return tca9548_bus_transmit_data(tca9548, data, data_size);
+    return tca9548_bus_slave_transmit_data(tca9548, slave_address, data, data_size);
 }
 
 tca9548_err_t tca9548_receive_current_channel_data(tca9548_t const* tca9548,
+                                                   uint16_t slave_address,
                                                    uint8_t* data,
                                                    size_t data_size)
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
 
-    return tca9548_bus_receive_data(tca9548, data, data_size);
+    return tca9548_bus_slave_receive_data(tca9548, slave_address, data, data_size);
 }
 
 tca9548_err_t tca9548_write_current_channel_data(tca9548_t const* tca9548,
-                                                 uint8_t address,
+                                                 uint16_t slave_address,
+                                                 uint8_t reg_address,
                                                  uint8_t const* data,
                                                  size_t data_size)
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
 
-    return tca9548_bus_write_data(tca9548, address, data, data_size);
+    return tca9548_bus_slave_write_data(tca9548, slave_address, reg_address, data, data_size);
 }
 
 tca9548_err_t tca9548_read_current_channel_data(tca9548_t const* tca9548,
-                                                uint8_t address,
+                                                uint16_t slave_address,
+                                                uint8_t reg_address,
                                                 uint8_t* data,
                                                 size_t data_size)
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
 
-    return tca9548_bus_read_data(tca9548, address, data, data_size);
+    return tca9548_bus_slave_read_data(tca9548, slave_address, reg_address, data, data_size);
 }
 
 tca9548_err_t tca9548_set_reset(tca9548_t const* tca9548, bool reset)
