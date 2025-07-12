@@ -31,7 +31,7 @@ typedef enum {
     TCA9548_CHANNEL_5 = 5,
     TCA9548_CHANNEL_6 = 6,
     TCA9548_CHANNEL_7 = 7,
-    TCA9548_CHANNEL_NONE,
+    TCA9548_CHANNEL_NONE = 8,
 } tca9548_channel_t;
 
 typedef struct {

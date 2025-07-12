@@ -149,6 +149,7 @@ tca9548_err_t tca9548_transmit_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
     err |= tca9548_bus_slave_transmit_data(tca9548, slave_address, data, data_size);
@@ -164,6 +165,7 @@ tca9548_err_t tca9548_receive_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
     err |= tca9548_bus_slave_receive_data(tca9548, slave_address, data, data_size);
@@ -180,6 +182,7 @@ tca9548_err_t tca9548_write_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
     err |= tca9548_bus_slave_write_data(tca9548, slave_address, reg_address, data, data_size);
@@ -196,6 +199,7 @@ tca9548_err_t tca9548_read_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     tca9548_err_t err = tca9548_set_channel(tca9548, channel);
     err |= tca9548_bus_slave_read_data(tca9548, slave_address, reg_address, data, data_size);
@@ -210,6 +214,7 @@ tca9548_err_t tca9548_transmit_current_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     return tca9548_bus_slave_transmit_data(tca9548, slave_address, data, data_size);
 }
@@ -221,6 +226,7 @@ tca9548_err_t tca9548_receive_current_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     return tca9548_bus_slave_receive_data(tca9548, slave_address, data, data_size);
 }
@@ -233,6 +239,7 @@ tca9548_err_t tca9548_write_current_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     return tca9548_bus_slave_write_data(tca9548, slave_address, reg_address, data, data_size);
 }
@@ -245,6 +252,7 @@ tca9548_err_t tca9548_read_current_channel_data(tca9548_t const* tca9548,
 {
     assert(tca9548 != NULL);
     assert(data != NULL);
+    assert(data_size > 0U);
 
     return tca9548_bus_slave_read_data(tca9548, slave_address, reg_address, data, data_size);
 }
@@ -258,15 +266,32 @@ tca9548_err_t tca9548_set_channel(tca9548_t const* tca9548, tca9548_channel_t ch
 {
     assert(tca9548 != NULL);
 
-    uint8_t data = {};
-
-    if (channel == TCA9548_CHANNEL_NONE) {
-        data = 0U;
-    } else {
-        data = 1U << (channel & 0xFFU);
+    if (channel > TCA9548_CHANNEL_7 || channel < TCA9548_CHANNEL_0) {
+        return TCA9548_ERR_FAIL;
     }
 
+    uint8_t data = (channel == TCA9548_CHANNEL_NONE) ? 0U : (1U << channel);
+
     return tca9548_bus_transmit_data(tca9548, &data, sizeof(data));
+}
+
+tca9548_err_t tca9548_get_channel(tca9548_t const* tca9548, tca9548_channel_t* channel)
+{
+    assert(tca9548 != NULL);
+    assert(channel != NULL);
+
+    uint8_t data = {};
+
+    tca9548_err_t err = tca9548_bus_receive_data(tca9548, &data, sizeof(data));
+
+    *channel = TCA9548_CHANNEL_NONE;
+    for (tca9548_channel_t i = TCA9548_CHANNEL_0; i <= TCA9548_CHANNEL_7; ++i) {
+        if (data & (1 << i)) {
+            *channel = i;
+        }
+    }
+
+    return err;
 }
 
 tca9548_err_t tca9548_get_control_reg(tca9548_t const* tca9548, tca9548_control_reg_t* reg)
