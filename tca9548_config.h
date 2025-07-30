@@ -5,6 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     TCA9548_ERR_OK = 0,
     TCA9548_ERR_FAIL = 1 << 0,
@@ -63,5 +67,9 @@ typedef struct {
     tca9548_err_t (
         *bus_slave_read_data)(void*, uint16_t, uint8_t, uint8_t*, size_t);
 } tca9548_interface_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TCA9548_TCA9548_CONFIG_H

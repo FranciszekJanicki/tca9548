@@ -4,6 +4,10 @@
 #include "tca9548_config.h"
 #include "tca9548_registers.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     tca9548_config_t config;
     tca9548_interface_t interface;
@@ -73,5 +77,9 @@ tca9548_err_t tca9548_get_control_reg(tca9548_t const* tca9548,
                                       tca9548_control_reg_t* reg);
 tca9548_err_t tca9548_set_control_reg(tca9548_t const* tca9548,
                                       tca9548_control_reg_t const* reg);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TCA9548_TCA9548_H

@@ -1,6 +1,10 @@
 #ifndef TCA9548_TCA9548_UTILITY_H
 #define TCA9548_TCA9548_UTILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define TCA9548_MIN_PULLUP_VOLTAGE (1.65F)
 #define TCA9548_MAX_PULLUP_VOLTAGE (5.5F)
 #define TCA9548_RISE_TIME_NS (300.0F)
@@ -25,5 +29,9 @@ inline float tca9548_get_max_pullup_resistance(float pullup_voltage,
 {
     return TCA9548_RISE_TIME_NS / (0.8473F * TCA9548_BUS_CAPACITANCE);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TCA9548_TCA9548_UTILITY_H
